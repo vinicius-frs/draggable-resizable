@@ -9,20 +9,23 @@
         <template v-else>
           Resolução:
           <div>
-            <label for="altura">Altura</label><input type="number" name="altura" id="altura" v-model="altura_aux">
             <label for="largura">Largura</label><input type="number" name="largura" id="largura" v-model="largura_aux">
-            <button v-on:click="defRes()">Salvar Resolução</button>
+            <label for="altura">Altura</label><input type="number" name="altura" id="altura" v-model="altura_aux">
+            <button v-on:click="defRes()">Confirmar Resolução</button>
           </div>
         </template>
       </div>
       <div v-if="altura > 0 && largura > 0" id="div-ct" style="border: 1px solid red; position: relative; transform-origin: top left;" v-bind:style="'transform: scale(' + scaleX + ', ' + scaleY + '); height: ' + altura + 'px; width: ' + largura + 'px;'">
         <template v-for="quadro, idx_q in json_quadros">
-          <vue-draggable-resizable :w="400" :h="400" @dragging="onDrag" @resizing="onResize" @resizestop="resizestop(idx_q, x, y, width, height)" :scale="[scaleX, scaleY]" v-bind:key=quadro.nome>
-            <p style="font-size: 2em">X: {{ quadro.x }} / Y: {{ quadro.y }} - Width: {{ quadro.width }} / Height: {{ quadro.height }}</p>
+          <vue-draggable-resizable :w="400" :h="400" @dragging="onDrag" @resizing="onResize" v-bind:parent="!(altura == 2160 && largura == 5760)" @resizestop="resizestop(idx_q, x, y, width, height)" :scale="[scaleX, scaleY]" v-bind:key=quadro.nome v-bind:id=quadro.nome>
+            <div id="inputs_links">
+              <p class="p_link">Link1<input type="text" style="border: 1px solid black" name="link1" id="link1" v-bind:div="quadro.nome"></p>
+              <p class="p_link">Link2<input type="text" style="border: 1px solid black" name="link2" id="link2" v-bind:div="quadro.nome"></p>
+            </div>
           </vue-draggable-resizable>
         </template>
         <template v-if="altura == 2160 && largura == 5760">
-          <div style="height: 100%; display: grid; box-sizing: border-box; grid-template-rows: 1fr 1fr;">
+          <div id="div_grid_tvs" style="height: 100%; display: grid; box-sizing: border-box; grid-template-rows: 1fr 1fr;">
             <div style="display: grid; box-sizing: border-box; grid-template-columns: 1fr 1fr 1fr;">
               <div style="border: 1px solid black"></div>
               <div style="border: 1px solid black"></div>
@@ -84,15 +87,28 @@ export default {
       this.json_quadros[idx_q].height = height;
     },
     addQuadro(){
-      this.json_quadros.push({nome: "Q"+this.json_quadros.length+1, x: 0, y: 0, width: 0, height: 0});
+      this.json_quadros.push({nome: "Q"+(this.json_quadros.length+1), x: 0, y: 0, width: 0, height: 0});
     },
     removeQuadro(){
       if(this.json_quadros.length > 1)
         this.json_quadros.splice(this.json_quadros.length-1, 1);
     },
     salvar(){
+      // Salva html
       let html = document.getElementById("div-ct").innerHTML;
       localStorage.setItem("div-ct", html);
+
+      // Salva links dos divs
+      let arrLinks1 = [];
+      document.querySelectorAll('[id^="link1"]').forEach(element =>{
+          arrLinks1.push({link: element.value, div: element.getAttribute("div")});
+      });
+      let arrLinks2 = [];
+      document.querySelectorAll('[id^="link2"]').forEach(element =>{
+          arrLinks2.push({link: element.value, div: element.getAttribute("div")});
+      });
+      localStorage.setItem("div-ct-link1", JSON.stringify(arrLinks1));
+      localStorage.setItem("div-ct-link2", JSON.stringify(arrLinks2));
     },
     defRes(){
       this.altura = this.altura_aux;

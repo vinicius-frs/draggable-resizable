@@ -1,0 +1,19 @@
+<style>
+    .vdr {
+        position: absolute;
+        box-sizing: border-box;
+    }
+</style>
+<script>
+    let html = localStorage.getItem("div-ct");
+    document.addEventListener("DOMContentLoaded", function(event) {
+        document.getElementById("div-ct").innerHTML = html;
+        document.querySelectorAll('.handle').forEach(element =>{
+            element.remove();
+        });
+    });
+</script>
+<body style="margin: 0;">
+    <div id="div-ct" style="position: relative">
+    </div>
+</body>

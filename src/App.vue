@@ -15,7 +15,7 @@
           </div>
         </template>
       </div>
-      <div v-if="altura > 0 && largura > 0" id="div-ct" style="border: 1px solid red; position: relative; transform-origin: top left;" v-bind:style="'transform: scale(' + scaleX + ', ' + scaleY + '); height: ' + altura + 'px; width: ' + largura + 'px;'">
+      <div v-if="altura > 0 && largura > 0" id="div-ct" style="background: linear-gradient(-90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px) 0% 0% / 640px 540px, linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px) 0% 0% / 640px 540px; border: 1px solid red; position: relative; transform-origin: top left;" v-bind:style="'transform: scale(' + scaleX + ', ' + scaleY + '); height: ' + altura + 'px; width: ' + largura + 'px;'">
         <template v-for="quadro, idx_q in json_quadros">
           <vue-draggable-resizable :w="400" :h="400" @dragging="onDrag" @resizing="onResize" v-bind:parent="!(altura == 2160 && largura == 5760)" @resizestop="resizestop(idx_q, x, y, width, height)" :scale="[scaleX, scaleY]" v-bind:key=quadro.nome v-bind:id=quadro.nome>
             <div id="inputs_links">
@@ -24,7 +24,7 @@
             </div>
           </vue-draggable-resizable>
         </template>
-        <template v-if="altura == 2160 && largura == 5760">
+        <!-- <template v-if="altura == 2160 && largura == 5760">
           <div id="div_grid_tvs" style="height: 100%; display: grid; box-sizing: border-box; grid-template-rows: 1fr 1fr;">
             <div style="display: grid; box-sizing: border-box; grid-template-columns: 1fr 1fr 1fr;">
               <div style="border: 1px solid black"></div>
@@ -37,7 +37,7 @@
               <div style="border: 1px solid black"></div>
             </div>
           </div>
-        </template>
+        </template> -->
       </div>
     </div>
 </template>
@@ -68,6 +68,10 @@ export default {
     }
   },
   mounted() {
+    this.altura = 1080;
+    this.largura = 1920;
+    this.scaleX = ((Math.floor((document.body.offsetWidth/this.largura)*100)/100).toFixed(2)) - 0.02;
+    this.scaleY = ((Math.floor((document.body.offsetHeight/this.altura)*100)/100).toFixed(2)) - 0.035;
   },
   methods: {
     onResize: function (x, y, width, height) {
@@ -109,6 +113,7 @@ export default {
       });
       localStorage.setItem("div-ct-link1", JSON.stringify(arrLinks1));
       localStorage.setItem("div-ct-link2", JSON.stringify(arrLinks2));
+      localStorage.setItem("res-ori", JSON.stringify({largura: this.largura, altura: this.altura}));
     },
     defRes(){
       this.altura = this.altura_aux;

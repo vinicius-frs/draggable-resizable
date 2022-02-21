@@ -8,6 +8,7 @@
     let html = localStorage.getItem("div-ct");
     let arrLinks1 = JSON.parse(localStorage.getItem("div-ct-link1"));
     let arrLinks2 = JSON.parse(localStorage.getItem("div-ct-link2"));
+    let resOri = JSON.parse(localStorage.getItem("res-ori"));
     document.addEventListener("DOMContentLoaded", function(event) {
         // Carrega html salvo
         document.getElementById("div-ct").innerHTML = html;
@@ -27,12 +28,26 @@
 
         // Adiciona o iframe com o link configurado aos respectivos divs
         arrLinks1.forEach(element => {
+            // Como nesse array tem todos os divs, aproveita o forEach para transformar px em %
+            let arrTransform = document.getElementById(element.div).style.transform.replace(/[^0-9,]/g, "").split(",");
+            arrTransform[0] = ((arrTransform[0]/resOri.largura)*100).toString() + "vw";
+            arrTransform[1] = ((arrTransform[1]/resOri.altura)*100).toString() + "vh";
+            document.getElementById(element.div).style.transform = "translate(" + arrTransform[0] + ", " + arrTransform[1] + ")";
+
+            let width = parseInt(document.getElementById(element.div).style.width.replace("px", ""));
+            let width_perc = ((width/resOri.largura)*100).toString() + "%";
+            document.getElementById(element.div).style.width = width_perc;
+
+            let height = parseInt(document.getElementById(element.div).style.height.replace("px", ""));
+            let height_perc = ((height/resOri.altura)*100).toString() + "%";
+            document.getElementById(element.div).style.height = height_perc;
+
             if(element.link != "")
-            document.getElementById(element.div).innerHTML = "<iframe src=" + element.link + " id=\"frame1\" style=\"height: 100%; width: 100%; border: none\"></iframe>";
+                document.getElementById(element.div).innerHTML = "<iframe src=" + element.link + " id=\"frame1\" style=\"height: 100%; width: 100%; border: none\"></iframe>";
         });
         arrLinks2.forEach(element => {
             if(element.link != "")
-            document.getElementById(element.div).innerHTML += "<iframe src=" + element.link + " id=\"frame2\" style=\"height: 100%; width: 100%; border: none; display: none\"></iframe>";
+                document.getElementById(element.div).innerHTML += "<iframe src=" + element.link + " id=\"frame2\" style=\"height: 100%; width: 100%; border: none; display: none\"></iframe>";
         });
         setInterval(() => {
             document.querySelectorAll('[id^="frame1"]').forEach(element =>{
@@ -52,7 +67,7 @@
         }, 5000);
     });
 </script>
-<body style="margin: 0;">
-    <div id="div-ct" style="position: relative">
+<body style="margin: 0; width: 100vw; height: 100vh;">
+    <div id="div-ct" style="position: relative; width: 100%; height: 100%;">
     </div>
 </body>

@@ -19,8 +19,8 @@
         <template v-for="quadro, idx_q in json_quadros">
           <vue-draggable-resizable :w="400" :h="400" @dragging="onDrag" @resizing="onResize" v-bind:parent="!(altura == 2160 && largura == 5760)" @resizestop="resizestop(idx_q, x, y, width, height)" :scale="[scaleX, scaleY]" v-bind:key=quadro.nome v-bind:id=quadro.nome>
             <div id="inputs_links">
-              <p class="p_link">Link1<input type="text" style="border: 1px solid black" name="link1" id="link1" v-bind:div="quadro.nome"></p>
-              <p class="p_link">Link2<input type="text" style="border: 1px solid black" name="link2" id="link2" v-bind:div="quadro.nome"></p>
+              <p class="p_link">Link1<input type="text" style="border: 1px solid black" name="link1" id="link" link="1" v-bind:div="quadro.nome"></p>
+              <p class="p_link">Link2<input type="text" style="border: 1px solid black" name="link2" id="link" link="2" v-bind:div="quadro.nome"></p>
             </div>
           </vue-draggable-resizable>
         </template>
@@ -103,16 +103,28 @@ export default {
       localStorage.setItem("div-ct", html);
 
       // Salva links dos divs
-      let arrLinks1 = [];
-      document.querySelectorAll('[id^="link1"]').forEach(element =>{
-          arrLinks1.push({link: element.value, div: element.getAttribute("div")});
+      let arrLinks = [];
+      let arrLinks_aux = [];
+      document.querySelectorAll('[id^="link"]').forEach(element =>{
+        if(element.getAttribute("link") == 1){
+          let obj_link = {link1: "", link2: "", div: ""};
+          obj_link.link1 = element.value;
+          obj_link.div = element.getAttribute("div");
+          arrLinks_aux[element.getAttribute("div")] = obj_link;
+        }
+        if(element.getAttribute("link") == 2){
+          arrLinks_aux[element.getAttribute("div")].link2 = element.value;
+        }
       });
-      let arrLinks2 = [];
-      document.querySelectorAll('[id^="link2"]').forEach(element =>{
-          arrLinks2.push({link: element.value, div: element.getAttribute("div")});
+      Object.entries(arrLinks_aux).forEach(element => {
+        arrLinks.push(element[1]);
       });
-      localStorage.setItem("div-ct-link1", JSON.stringify(arrLinks1));
-      localStorage.setItem("div-ct-link2", JSON.stringify(arrLinks2));
+      // let arrLinks2 = [];
+      // document.querySelectorAll('[id^="link2"]').forEach(element =>{
+      //     arrLinks2.push({link: element.value, div: element.getAttribute("div")});
+      // });
+      localStorage.setItem("div-ct-links", JSON.stringify(arrLinks));
+      // localStorage.setItem("div-ct-link2", JSON.stringify(arrLinks2));
       localStorage.setItem("res-ori", JSON.stringify({largura: this.largura, altura: this.altura}));
     },
     defRes(){
